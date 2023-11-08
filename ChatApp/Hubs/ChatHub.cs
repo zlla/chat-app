@@ -78,7 +78,7 @@ namespace SignalRChat.Hubs
         public async Task SendPrivateMessage(string connectionId, string message)
         {
             string? token = Context.GetHttpContext()?.Request.Query["access_token"];
-            List<ChatRoom> chatRooms;
+            ChatRoom? chatRoom;
 
             HandleAccessToken(token);
 
@@ -91,25 +91,25 @@ namespace SignalRChat.Hubs
 
                 if (receiverId != null)
                 {
-                    chatRooms = _db.ChatRooms
+                    chatRoom = _db.ChatRooms
                         .Where(cr => cr.RoomName == "duo" &&
                             cr.Memberships != null &&
                             cr.Memberships.Any(ms => ms.UserId == receiverId) &&
                             cr.Memberships.Any(ms => ms.UserId == senderId))
-                        .ToList();
+                        .FirstOrDefault();
 
-                    if (chatRooms.Count > 0)
+                    if (chatRoom != null)
                     {
-                        Message message1 = new()
+                        Message messageModel = new()
                         {
-                            RoomId = chatRooms[0].Id,
+                            RoomId = chatRoom.Id,
                             SenderId = senderId,
                             Content = message,
                             SentAt = DateTime.Now,
                             MessageType = "text"
                         };
 
-                        _db.Messages.Add(message1);
+                        _db.Messages.Add(messageModel);
                         _db.SaveChanges();
                     }
                 }

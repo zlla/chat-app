@@ -1,3 +1,5 @@
+import "bootswatch/dist/journal/bootstrap.min.css";
+
 import { useState, useEffect } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";

@@ -3,11 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-Login.propTypes = {
-  setAuth: PropTypes.func,
-};
-
-function Login(props) {
+const Login = (props) => {
   const { setAuth } = props;
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -101,6 +97,10 @@ function Login(props) {
       </button>
     </>
   );
-}
+};
+
+Login.propTypes = {
+  setAuth: PropTypes.func,
+};
 
 export default Login;

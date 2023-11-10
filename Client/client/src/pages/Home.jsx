@@ -3,7 +3,11 @@ import Courses from "../components/Courses";
 const Home = () => {
   return (
     <>
-      <div id="demo" className="carousel slide" data-bs-ride="carousel">
+      <div
+        id="demo"
+        className="px-xxl-5 px-xl-5 carousel slide"
+        data-bs-ride="carousel"
+      >
         <div className="carousel-inner">
           <div className="carousel-item active">
             <img
@@ -39,12 +43,10 @@ const Home = () => {
         </button>
       </div>
 
-      <div className="my-4 d-flex justify-content-center">
+      <div className="my-4 px-5">
         <div>
-          <div className="text-center">
-            <h1 className="align-content-center">
-              A broad selection of courses
-            </h1>
+          <div className="px-xxl-5 px-xl-5 px-lg-5">
+            <h1>A broad selection of courses</h1>
             <p>
               Choose from over 210,000 online video courses with new additions
               published every month

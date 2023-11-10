@@ -7,7 +7,7 @@ const CourseCard = (props) => {
   const { title, instructor, rating, price } = props;
 
   return (
-    <Col xs={12} sm={6} md={4} lg={2} className="mb-3">
+    <Col xs={12} sm={6} md={4} lg={2} className="mb-3 px-0">
       <div className="course-card">
         <h2>{title}</h2>
         <p>
@@ -84,7 +84,7 @@ const Courses = () => {
 
   return (
     <div className="courses-container">
-      <Row className="justify-content-center mx-0">
+      <Row className="d-flex justify-content-between px-xxl-5 px-xl-5 px-lg-5 mx-0">
         {currentCourses.map((course) => (
           <CourseCard
             key={course.title}

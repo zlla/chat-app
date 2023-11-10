@@ -38,7 +38,21 @@ const Home = () => {
           <span className="carousel-control-next-icon"></span>
         </button>
       </div>
-      <Courses />
+
+      <div className="my-4 d-flex justify-content-center">
+        <div>
+          <div className="text-center">
+            <h1 className="align-content-center">
+              A broad selection of courses
+            </h1>
+            <p>
+              Choose from over 210,000 online video courses with new additions
+              published every month
+            </p>
+          </div>
+          <Courses />
+        </div>
+      </div>
     </>
   );
 };

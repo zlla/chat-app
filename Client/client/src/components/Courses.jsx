@@ -1,6 +1,7 @@
 import { number, string } from "prop-types";
 import { useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
+import { useMediaQuery } from "react-responsive";
 
 const CourseCard = (props) => {
   const { title, instructor, rating, price } = props;
@@ -29,6 +30,8 @@ CourseCard.propTypes = {
 };
 
 const Courses = () => {
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
+  const coursesPerPage = isSmallScreen ? 1 : 4;
   const [courses, setCourses] = useState([
     {
       title: "Python for Data Science and Machine Learning Bootcamp",
@@ -61,7 +64,6 @@ const Courses = () => {
     },
   ]);
 
-  const coursesPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPage = Math.ceil(courses.length / coursesPerPage);

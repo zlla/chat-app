@@ -11,11 +11,48 @@ import Home from "./Home";
 import ShareLayout from "./ShareLayout";
 
 function App() {
-  const token = localStorage.getItem("token");
-  const [auth, setAuth] = useState(!!token);
+  const initialToken = localStorage.getItem("accessToken");
+  const [token, setToken] = useState(initialToken);
+  const [auth, setAuth] = useState(!!initialToken);
 
   useEffect(() => {
-    async function requireAuth() {
+    const apiUrl = "http://localhost:5255";
+
+    const fetchNewToken = async () => {
+      const aT = localStorage.getItem("accessToken");
+      const rT = localStorage.getItem("refreshToken");
+
+      try {
+        const axiosInstance = axios.create({
+          baseURL: apiUrl,
+          headers: {
+            Authorization: `Bearer ${aT}`,
+            refreshToken: rT,
+          },
+        });
+
+        const response = await axiosInstance.post(
+          `${apiUrl}/api/auth/refresh-token`
+        );
+
+        let newAT = response.data.accessToken;
+        localStorage.setItem("accessToken", newAT);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        setToken(newAT);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const intervalId = setInterval(fetchNewToken, 30000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function requireAuth(token) {
       try {
         await axios.post("http://localhost:5255/api/auth/validate-token", {
           AccessToken: token,
@@ -27,17 +64,16 @@ function App() {
     }
 
     if (token) {
-      requireAuth();
+      requireAuth(token);
     }
-  }, [token]);
+  }, [token, setAuth]);
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="*" element={<ErrorPage />} />
-        <Route element={<ShareLayout />}>
+        <Route element={<ShareLayout auth={auth} setAuth={setAuth} />}>
           <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
           <Route path="/auth/login" element={<Login setAuth={setAuth} />} />
           <Route path="/auth/register" element={<Register />} />
           <Route

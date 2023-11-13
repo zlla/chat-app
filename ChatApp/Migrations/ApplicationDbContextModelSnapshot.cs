@@ -70,6 +70,100 @@ namespace ChatApp.Migrations
                     b.ToTable("ChatRooms");
                 });
 
+            modelBuilder.Entity("ChatApp.Models.EducationalCourse", b =>
+                {
+                    b.Property<long>("CourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CourseId"));
+
+                    b.Property<string>("CourseCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CourseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Instructor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SelectedByAdmin")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CourseId");
+
+                    b.ToTable("EducationalCourses");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.JobOpportunity", b =>
+                {
+                    b.Property<long>("JobID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("JobID"));
+
+                    b.Property<DateTime>("ApplicationDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IndustryType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobRequirements")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PostingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SelectedByAdmin")
+                        .HasColumnType("int");
+
+                    b.HasKey("JobID");
+
+                    b.ToTable("JobOpportunities");
+                });
+
             modelBuilder.Entity("ChatApp.Models.Message", b =>
                 {
                     b.Property<long>("Id")
@@ -154,6 +248,23 @@ namespace ChatApp.Migrations
                     b.ToTable("SignalRConnectionIds");
                 });
 
+            modelBuilder.Entity("ChatApp.Models.Skill", b =>
+                {
+                    b.Property<long>("SkillID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SkillID"));
+
+                    b.Property<string>("SkillName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SkillID");
+
+                    b.ToTable("Skills");
+                });
+
             modelBuilder.Entity("ChatApp.Models.User", b =>
                 {
                     b.Property<long>("Id")
@@ -212,6 +323,89 @@ namespace ChatApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Memberships");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.UserCourseEnrollment", b =>
+                {
+                    b.Property<long>("EnrollmentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("EnrollmentID"));
+
+                    b.Property<long>("CourseID")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("EnrollmentID");
+
+                    b.HasIndex("CourseID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserCourseEnrollments");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.UserJobApplication", b =>
+                {
+                    b.Property<long>("ApplicationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ApplicationID"));
+
+                    b.Property<DateTime>("ApplicationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("JobID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ApplicationID");
+
+                    b.HasIndex("JobID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserJobApplications");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.UserSkill", b =>
+                {
+                    b.Property<long>("UserSkillID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UserSkillID"));
+
+                    b.Property<long>("SkillID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("UserSkillID");
+
+                    b.HasIndex("SkillID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserSkills");
                 });
 
             modelBuilder.Entity("ChatApp.Models.AccessToken", b =>
@@ -285,6 +479,63 @@ namespace ChatApp.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ChatApp.Models.UserCourseEnrollment", b =>
+                {
+                    b.HasOne("ChatApp.Models.EducationalCourse", "Course")
+                        .WithMany("UserCourseEnrollments")
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChatApp.Models.User", "User")
+                        .WithMany("UserCourseEnrollments")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.UserJobApplication", b =>
+                {
+                    b.HasOne("ChatApp.Models.JobOpportunity", "JobOpportunity")
+                        .WithMany("UserJobApplications")
+                        .HasForeignKey("JobID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChatApp.Models.User", "User")
+                        .WithMany("UserJobApplications")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobOpportunity");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.UserSkill", b =>
+                {
+                    b.HasOne("ChatApp.Models.Skill", "Skill")
+                        .WithMany("UserSkills")
+                        .HasForeignKey("SkillID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChatApp.Models.User", "User")
+                        .WithMany("UserSkills")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ChatApp.Models.ChatRoom", b =>
                 {
                     b.Navigation("Memberships");
@@ -292,9 +543,24 @@ namespace ChatApp.Migrations
                     b.Navigation("Messages");
                 });
 
+            modelBuilder.Entity("ChatApp.Models.EducationalCourse", b =>
+                {
+                    b.Navigation("UserCourseEnrollments");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.JobOpportunity", b =>
+                {
+                    b.Navigation("UserJobApplications");
+                });
+
             modelBuilder.Entity("ChatApp.Models.RefreshToken", b =>
                 {
                     b.Navigation("AccessToken");
+                });
+
+            modelBuilder.Entity("ChatApp.Models.Skill", b =>
+                {
+                    b.Navigation("UserSkills");
                 });
 
             modelBuilder.Entity("ChatApp.Models.User", b =>
@@ -306,6 +572,12 @@ namespace ChatApp.Migrations
                     b.Navigation("SentMessages");
 
                     b.Navigation("SignalRConnectionIds");
+
+                    b.Navigation("UserCourseEnrollments");
+
+                    b.Navigation("UserJobApplications");
+
+                    b.Navigation("UserSkills");
                 });
 #pragma warning restore 612, 618
         }

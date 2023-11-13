@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
-import axios from "axios";
+import { axiosInstance, apiUrl } from "../support/axios_setting";
 
 const Chat = () => {
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  // const [connectionId, setConnectionId] = useState("");
   const [token, setToken] = useState("");
-  const [refreshTokenInterval, setRefreshTokenInterval] = useState(null);
+  const [refreshSignalRInterval, setRefreshSignalRInterval] = useState(null);
   const [userName, setUserName] = useState("");
 
+  //for send private message
   const [test, setTest] = useState("");
 
   useEffect(() => {
@@ -33,11 +33,10 @@ const Chat = () => {
       .then(() => {
         newConnection.on("ReceiveMessage", (message) => {
           setMessages((prevMessages) => [...prevMessages, message]);
-          // setConnectionId(newConnection.connectionId);
         });
 
-        const intervalId = setInterval(refreshToken, 30000);
-        setRefreshTokenInterval(intervalId);
+        const intervalId = setInterval(refreshSignalR, 30000);
+        setRefreshSignalRInterval(intervalId);
       })
       .catch((error) => {
         console.log(error);
@@ -51,45 +50,15 @@ const Chat = () => {
         newConnection.stop();
       }
 
-      if (refreshTokenInterval) {
-        clearInterval(refreshTokenInterval);
+      if (refreshSignalRInterval) {
+        clearInterval(refreshSignalRInterval);
       }
     };
   }, [token]);
 
-  const refreshToken = async () => {
-    try {
-      const newToken = await fetchNewToken();
-      setToken(newToken);
-    } catch (error) {
-      console.log("Error refreshing token: ", error);
-    }
-  };
-
-  const fetchNewToken = async () => {
-    const aT = localStorage.getItem("accessToken");
-    const rT = localStorage.getItem("refreshToken");
-    const apiUrl = "http://localhost:5255";
-
-    const axiosInstance = axios.create({
-      baseURL: apiUrl,
-      headers: {
-        Authorization: `Bearer ${aT}`,
-        refreshToken: rT,
-      },
-    });
-
-    axiosInstance
-      .post(`${apiUrl}/api/auth/refresh-token`)
-      .then((response) => {
-        let aT = response.data.accessToken;
-        localStorage.setItem("accessToken", aT);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        return aT;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const refreshSignalR = () => {
+    const newAT = localStorage.getItem("accessToken");
+    setToken(newAT);
   };
 
   const sendMessage = async () => {
@@ -117,16 +86,6 @@ const Chat = () => {
   };
 
   const fetchUserInfo = async () => {
-    const aT = localStorage.getItem("accessToken");
-    const apiUrl = "http://localhost:5255";
-
-    const axiosInstance = axios.create({
-      baseURL: apiUrl,
-      headers: {
-        Authorization: `Bearer ${aT}`,
-      },
-    });
-
     axiosInstance
       .get(`${apiUrl}/api/GetUserInformation`)
       .then((response) => {
@@ -134,7 +93,6 @@ const Chat = () => {
       })
       .catch((error) => {
         console.log(error);
-        // navigate("/auth/login");
       });
   };
 

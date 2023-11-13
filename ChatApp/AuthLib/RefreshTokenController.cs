@@ -121,16 +121,6 @@ namespace ChatApp.Controllers
             _db.RefreshTokens.Remove(oldRefreshToken);
             _db.SaveChanges();
 
-            Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions()
-            {
-                Domain = "localhost",
-                Path = "/",
-                HttpOnly = false,
-                Secure = false,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.Now.AddDays(7)
-            });
-
             ReturnToken returnToken = new()
             {
                 AccessToken = newAccessToken.ToString(),

@@ -17,6 +17,14 @@ public class ApplicationDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<SignalRConnectionId> SignalRConnectionIds { get; set; }
 
+    public DbSet<EducationalCourse> EducationalCourses { get; set; }
+    public DbSet<JobOpportunity> JobOpportunities { get; set; }
+    public DbSet<UserCourseEnrollment> UserCourseEnrollments { get; set; }
+    public DbSet<UserJobApplication> UserJobApplications { get; set; }
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<UserSkill> UserSkills { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
@@ -25,6 +33,9 @@ public class ApplicationDbContext : DbContext
             .HasMany(u => u.RefreshToken).WithOne(rt => rt.User).HasForeignKey(rt => rt.UserId);
         modelBuilder.Entity<User>()
             .HasMany(u => u.SignalRConnectionIds).WithOne(srci => srci.User).HasForeignKey(srci => srci.UserId);
+        modelBuilder.Entity<User>().HasMany(u => u.UserCourseEnrollments).WithOne(uce => uce.User).HasForeignKey(uce => uce.UserID);
+        modelBuilder.Entity<User>().HasMany(u => u.UserJobApplications).WithOne(uja => uja.User).HasForeignKey(uja => uja.UserID);
+        modelBuilder.Entity<User>().HasMany(u => u.UserSkills).WithOne(us => us.User).HasForeignKey(u => u.UserID);
 
         modelBuilder.Entity<RefreshToken>()
             .HasOne(rt => rt.AccessToken).WithOne(at => at.RefreshToken).HasForeignKey<AccessToken>(at => at.RtId);
@@ -51,6 +62,12 @@ public class ApplicationDbContext : DbContext
             .HasOne(m => m.Room)
             .WithMany(r => r.Messages)
             .HasForeignKey(m => m.RoomId);
+
+        modelBuilder.Entity<EducationalCourse>().HasMany(ec => ec.UserCourseEnrollments).WithOne(uce => uce.Course).HasForeignKey(uce => uce.CourseID);
+        modelBuilder.Entity<JobOpportunity>().HasMany(jo => jo.UserJobApplications).WithOne(uja => uja.JobOpportunity).HasForeignKey(uja => uja.JobID);
+
+        modelBuilder.Entity<Skill>().HasMany(s => s.UserSkills).WithOne(us => us.Skill).HasForeignKey(s => s.SkillID);
+
     }
 }
 

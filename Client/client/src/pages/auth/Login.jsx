@@ -21,34 +21,11 @@ const Login = (props) => {
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
       setAuth(true);
-      navigate("/chat");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
   };
-
-  // test
-  const getData = () => {
-    const token = localStorage.getItem("token");
-    const apiUrl = "http://localhost:5255";
-
-    const axiosInstance = axios.create({
-      baseURL: apiUrl,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    axiosInstance
-      .get(`${apiUrl}/WeatherForecast`)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-  // end test
 
   return (
     <>
@@ -85,16 +62,6 @@ const Login = (props) => {
           submit
         </button>
       </form>
-      <br />
-      <br />
-      <button
-        type="button"
-        onClick={() => {
-          getData();
-        }}
-      >
-        Get Data
-      </button>
     </>
   );
 };

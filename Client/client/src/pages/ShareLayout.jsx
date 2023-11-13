@@ -1,13 +1,24 @@
-import { Outlet, Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 
-const ShareLayout = () => {
+const ShareLayout = (props) => {
+  const { auth, setAuth } = props;
+  const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setAuth(false);
+    navigate("/");
+  };
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/home"}>
+          <NavLink className="navbar-brand text-black" to={"/"}>
             Siu
-          </Link>
+          </NavLink>
           <button
             className="navbar-toggler"
             type="button"
@@ -22,28 +33,24 @@ const ShareLayout = () => {
           <div className="collapse navbar-collapse" id="navbarColor01">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <Link className="nav-link" to={`/home`}>
+                <NavLink className="nav-link" to={`/`}>
                   Home
-                  <span className="visually-hidden">(current)</span>
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to={`/chat`}>
+                <NavLink className="nav-link" to={`/chat`}>
                   Chat
-                  <span className="visually-hidden">(current)</span>
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to={"/home"}>
+                <NavLink className="nav-link" to={"/"}>
                   Courses
-                  <span className="visually-hidden">(current)</span>
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to={"/home"}>
+                <NavLink className="nav-link" to={"/"}>
                   Jobs
-                  <span className="visually-hidden">(current)</span>
-                </Link>
+                </NavLink>
               </li>
 
               <li className="nav-item dropdown">
@@ -55,22 +62,37 @@ const ShareLayout = () => {
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  Dropdown
+                  More
                 </a>
                 <div className="dropdown-menu">
-                  <Link className="dropdown-item" to={"/home"}>
+                  <NavLink className="dropdown-item" to={"/"}>
                     About Us
-                  </Link>
-                  <Link className="dropdown-item" to={`/auth/login`}>
-                    Login
-                  </Link>
-                  <Link className="dropdown-item" to={`/auth/register`}>
-                    Register
-                  </Link>
+                  </NavLink>
+                  {!auth ? (
+                    <>
+                      <NavLink className="dropdown-item" to={`/auth/login`}>
+                        Login
+                      </NavLink>
+                      <NavLink className="dropdown-item" to={`/auth/register`}>
+                        Register
+                      </NavLink>
+                    </>
+                  ) : (
+                    <button
+                      className="dropdown-item"
+                      onClick={() => handleLogOut()}
+                    >
+                      Logout
+                    </button>
+                  )}
                   <div className="dropdown-divider"></div>
-                  <Link className="dropdown-item" to={"/home"}>
-                    Separated link
-                  </Link>
+                  <a
+                    className="dropdown-item"
+                    href="https://www.facebook.com/nguyenhoangan32/"
+                    target="_tab"
+                  >
+                    fb: Nguyen Hoang An
+                  </a>
                 </div>
               </li>
             </ul>
@@ -94,4 +116,10 @@ const ShareLayout = () => {
     </>
   );
 };
+
+ShareLayout.propTypes = {
+  auth: PropTypes.bool,
+  setAuth: PropTypes.func,
+};
+
 export default ShareLayout;

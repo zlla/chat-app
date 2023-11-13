@@ -44,8 +44,8 @@ namespace SignalRChat.Hubs
             if (!string.IsNullOrEmpty(token))
             {
                 var principal = _authLibrary.Validate(token);
-                string? email = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
-                User user = _db.Users.Where(u => u.Email == email).First();
+                string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+                User user = _db.Users.Where(u => u.Username == userName).First();
                 srci = new SignalRConnectionId
                 {
                     UserId = user.Id,
@@ -61,18 +61,18 @@ namespace SignalRChat.Hubs
         public async Task SendMessageToAll(string message)
         {
             string? token = Context.GetHttpContext()?.Request.Query["access_token"];
-            string userEmail = "";
+            string userNameFromDb = "";
 
             HandleAccessToken(token);
 
             if (!string.IsNullOrEmpty(token))
             {
                 var principal = _authLibrary.Validate(token);
-                string? email = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
-                userEmail = _db.Users.Where(u => u.Email == email).First().Email;
+                string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+                userNameFromDb = _db.Users.Where(u => u.Username == userName).First().Username;
             }
 
-            await Clients.All.SendAsync("ReceiveMessage", $"{userEmail}: {message}");
+            await Clients.All.SendAsync("ReceiveMessage", $"{userNameFromDb}: {message}");
         }
 
         public async Task SendPrivateMessage(string connectionId, string message)
@@ -85,8 +85,8 @@ namespace SignalRChat.Hubs
             if (!string.IsNullOrEmpty(token))
             {
                 var principal = _authLibrary.Validate(token);
-                string? email = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
-                long senderId = _db.Users.Where(u => u.Email == email).First().Id;
+                string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+                long senderId = _db.Users.Where(u => u.Username == userName).First().Id;
                 long? receiverId = _db.SignalRConnectionIds.Where(srci => srci.Value == connectionId).First().UserId;
 
                 if (receiverId != null)

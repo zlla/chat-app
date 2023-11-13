@@ -48,15 +48,15 @@ namespace ChatApp.Controllers
             }
 
             // Get the user's email from the access token claims
-            string? email = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+            string? userName = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
             // Check if the user's email is null or empty
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(userName))
             {
                 return BadRequest("Invalid user");
             }
 
             // Get the user from the database by email
-            User? user = _db.Users.FirstOrDefault(u => u.Email == email);
+            User? user = _db.Users.FirstOrDefault(u => u.Username == userName);
             // Check if the user exists
             if (user == null)
             {

@@ -29,16 +29,17 @@ namespace ChatApp
             if (!string.IsNullOrEmpty(accessToken))
             {
                 var principal = _authLibrary.Validate(accessToken);
-                string? email = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
-                if (!string.IsNullOrEmpty(email))
+                string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+                if (!string.IsNullOrEmpty(userName))
                 {
-                    User? user = _db.Users.FirstOrDefault(u => u.Email == email);
+                    User? user = _db.Users.FirstOrDefault(u => u.Username == userName);
                     if (user != null)
                     {
                         UserInformation userInformation = new()
                         {
                             Id = user.Id,
                             Email = user.Email,
+                            Username = user.Username
                         };
 
                         return Ok(userInformation);

@@ -8,6 +8,9 @@ namespace ChatApp.Models
         public long Id { get; set; }
         [Required]
         public required string Email { get; set; }
+        [Required]
+        public required string Username { get; set; }
+        [Required]
         public required string Password { get; set; }
         public virtual ICollection<RefreshToken>? RefreshToken { get; set; }
         public virtual ICollection<UserChatRoomMembership>? Memberships { get; set; }

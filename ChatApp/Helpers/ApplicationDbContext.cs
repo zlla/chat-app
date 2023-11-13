@@ -19,9 +19,10 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+        modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
         modelBuilder.Entity<User>()
             .HasMany(u => u.RefreshToken).WithOne(rt => rt.User).HasForeignKey(rt => rt.UserId);
-
         modelBuilder.Entity<User>()
             .HasMany(u => u.SignalRConnectionIds).WithOne(srci => srci.User).HasForeignKey(srci => srci.UserId);
 

@@ -41,6 +41,7 @@ namespace ChatApp.Controllers
             User userToDb = new()
             {
                 Email = user.Email,
+                Username = user.Username,
                 Password = passwordHashed
             };
 

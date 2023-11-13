@@ -22,7 +22,7 @@ namespace ChatApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginPost([FromBody] User user)
+        public IActionResult LoginPost([FromBody] UserLogin user)
         {
             if (user != null)
             {

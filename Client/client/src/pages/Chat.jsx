@@ -130,7 +130,7 @@ const Chat = () => {
     axiosInstance
       .get(`${apiUrl}/api/GetUserInformation`)
       .then((response) => {
-        setUserName(response.data.email);
+        setUserName(response.data.username);
       })
       .catch((error) => {
         console.log(error);

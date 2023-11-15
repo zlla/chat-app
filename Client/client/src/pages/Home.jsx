@@ -1,6 +1,10 @@
+import { bool } from "prop-types";
 import Courses from "../components/Courses";
+import Jobs from "../components/Jobs";
 
-const Home = () => {
+const Home = (props) => {
+  const { auth } = props;
+
   return (
     <>
       <div
@@ -52,10 +56,25 @@ const Home = () => {
               published every month
             </p>
           </div>
-          <Courses />
+          <Courses auth={auth} />
+        </div>
+        <div className="mt-5">
+          <div className="px-xxl-5 px-xl-5 px-lg-5">
+            <h1>A broad selection of jobs</h1>
+            <p>
+              Choose from over 10,000 jobs with new additions published every
+              month
+            </p>
+          </div>
+          <Jobs auth={auth} />
         </div>
       </div>
     </>
   );
 };
+
+Home.propTypes = {
+  auth: bool,
+};
+
 export default Home;

@@ -1,0 +1,254 @@
+import { bool, number, string } from "prop-types";
+import { useEffect, useState } from "react";
+import { Row, Col, Button } from "react-bootstrap";
+import { useMediaQuery } from "react-responsive";
+
+import { axiosInstance, apiUrl } from "../support/axios_setting";
+import "../styles/homepage/info-modal.css";
+
+const JobCard = (props) => {
+  const { auth, title, salary, postingDate } = props;
+
+  return (
+    <div>
+      <div className="course-card">
+        <h5>{title}</h5>
+        <p>
+          <b>Salary: </b>
+          {salary}
+          <br />
+          <b>Posting Date: </b>
+          {postingDate}
+        </p>
+        <br />
+      </div>
+    </div>
+  );
+};
+
+JobCard.propTypes = {
+  auth: bool,
+  title: string,
+  salary: number,
+  postingDate: string,
+};
+
+const Jobs = (props) => {
+  const { auth } = props;
+
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 560px)" });
+  const [jobs, setJobs] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [jobsPerPage, setJobsPerPage] = useState(4);
+  const [initJobs, setInitJobs] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const getData = async (address) => {
+    try {
+      const response = await axiosInstance.get(`${apiUrl}/${address}`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const showJobByCategory = (e, category) => {
+    e.preventDefault();
+    const newList = [];
+    initJobs.forEach((job) => {
+      if (job.industryType == e.target.innerHTML) {
+        newList.push(job);
+      }
+    });
+    setJobs(newList);
+    setSelectedCategory(category);
+  };
+
+  const handleOkButtonClick = (e) => {
+    console.log(e);
+  };
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setJobsPerPage(1);
+    } else {
+      const screenWidth = window.innerWidth;
+      if (screenWidth <= 780) {
+        setJobsPerPage(2);
+      } else if (screenWidth <= 1080) {
+        setJobsPerPage(3);
+      } else {
+        setJobsPerPage(4);
+      }
+    }
+  }, [isSmallScreen]);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const data = await getData("api/home/hot_trend_jobs");
+        if (
+          data["categoryCount"] &&
+          data["categoryCount"].length > 0 &&
+          data["jobOpportunityDTO"] &&
+          data["jobOpportunityDTO"].length > 0
+        ) {
+          const categories = data["categoryCount"];
+          const jobs = data["jobOpportunityDTO"];
+
+          setCategories(categories);
+          setInitJobs(jobs);
+          const newList = [];
+          jobs.forEach((job) => {
+            if (job.industryType == categories[0].category) {
+              newList.push(job);
+            }
+          });
+          setJobs(newList);
+          setSelectedCategory(categories[0].category);
+        }
+      } catch (error) {
+        console.error(error);
+        setCategories([]);
+        setJobs([]);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPage = Math.ceil(jobs.length / jobsPerPage);
+  const handleNext = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPage));
+  };
+  const handlePrev = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+  const startIdx = (currentPage - 1) * jobsPerPage;
+  const endIdx = Math.min(startIdx + jobsPerPage, jobs.length);
+  const currentJobs =
+    jobs.length < jobsPerPage ? [] : jobs.slice(startIdx, endIdx);
+
+  // Step 1: Create state to track whether the purchase form should be displayed
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  // Step 2: Handle course click event
+  const handleJobClick = (course) => {
+    setSelectedCourse(course);
+    // Show the purchase form when a course is clicked
+    setShowPurchaseModal(true);
+  };
+
+  // Step 3: Define a function to close the purchase form modal
+  const handleCloseModal = () => {
+    setShowPurchaseModal(false);
+  };
+
+  return (
+    <div className="courses-container">
+      <div className="px-xxl-5 px-xl-5 px-lg-5 flex-">
+        {categories.map((category) => (
+          <a
+            onClick={(e) => showJobByCategory(e, category.category)}
+            className={`me-4 text-uppercase ${
+              selectedCategory === category.category
+                ? "text-decoration-underline"
+                : ""
+            } d-block d-sm-inline-block`}
+            key={category.category}
+            style={{ textDecoration: "none" }}
+          >
+            {category.category}
+          </a>
+        ))}
+      </div>
+      <br />
+      <Row className="d-flex justify-content-between px-xxl-5 px-xl-5 px-lg-5">
+        {currentJobs.map((job) => (
+          <Col
+            key={job.jobID}
+            onClick={() => handleJobClick(job)}
+            style={{ cursor: "pointer", width: "200px", height: "160px" }}
+            xs={12}
+            sm={6}
+            md={4}
+            lg={2}
+            className="mb-3"
+          >
+            <JobCard
+              auth={auth}
+              title={job.jobTitle}
+              salary={job.salary}
+              postingDate={job.postingDate}
+            />
+          </Col>
+        ))}
+      </Row>
+      {totalPage > 1 && (
+        <div className="courses-controls mt-3 px-xxl-5 px-xl-5 px-lg-5 me-2">
+          <Button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className="control-button"
+          >
+            Prev
+          </Button>{" "}
+          <Button
+            onClick={handleNext}
+            disabled={currentPage === totalPage}
+            className="control-button"
+          >
+            Next
+          </Button>
+        </div>
+      )}
+      {showPurchaseModal && selectedCourse && (
+        <div className="purchase-modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleCloseModal}>
+              &times;
+            </span>
+            <form className="purchaseContainer">
+              <fieldset>
+                <legend>Purchase - {selectedCourse.courseName}</legend>
+                <div className="form-group">
+                  <label htmlFor="emailInput" className="form-label mt-4">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="emailInput"
+                    aria-describedby="emailHelp"
+                    placeholder="Enter email"
+                  />
+                  <small id="emailHelp" className="form-text text-muted">
+                    You can leave it blank; we will use our service registration
+                    email to send receive.
+                  </small>
+                </div>
+              </fieldset>
+              <br />
+              <button
+                type="button"
+                className="btn btn-danger float-end"
+                onClick={(e) => handleOkButtonClick(e)}
+              >
+                Ok
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+Jobs.propTypes = {
+  auth: bool,
+};
+
+export default Jobs;

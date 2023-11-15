@@ -1,4 +1,4 @@
-namespace ChatApp.Models
+namespace ChatApp.Models.DTO
 {
     public class EducationalCourseDTO
     {

@@ -13,49 +13,6 @@ const Chat = () => {
   //for send private message
   const [test, setTest] = useState("");
 
-  useEffect(() => {
-    const initialToken = localStorage.getItem("accessToken");
-    setToken(initialToken);
-
-    const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5255/chat", {
-        accessTokenFactory: () => {
-          return token;
-        },
-      })
-      .withAutomaticReconnect()
-      .build();
-
-    setConnection(newConnection);
-
-    newConnection
-      .start()
-      .then(() => {
-        newConnection.on("ReceiveMessage", (message) => {
-          setMessages((prevMessages) => [...prevMessages, message]);
-        });
-
-        const intervalId = setInterval(refreshSignalR, 30000);
-        setRefreshSignalRInterval(intervalId);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    fetchUserInfo();
-
-    return () => {
-      if (newConnection) {
-        newConnection.off("ReceiveMessage");
-        newConnection.stop();
-      }
-
-      if (refreshSignalRInterval) {
-        clearInterval(refreshSignalRInterval);
-      }
-    };
-  }, [token]);
-
   const refreshSignalR = () => {
     const newAT = localStorage.getItem("accessToken");
     setToken(newAT);
@@ -95,6 +52,52 @@ const Chat = () => {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    const initialToken = localStorage.getItem("accessToken");
+    setToken(initialToken);
+
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl("http://localhost:5255/chat", {
+        accessTokenFactory: () => {
+          return token;
+        },
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+
+    newConnection
+      .start()
+      .then(() => {
+        newConnection.on("ReceiveMessage", (message) => {
+          setMessages((prevMessages) => [...prevMessages, message]);
+        });
+
+        const intervalId = setInterval(refreshSignalR, 30000);
+        setRefreshSignalRInterval(intervalId);
+        fetchUserInfo();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return () => {
+      if (newConnection) {
+        newConnection.off("ReceiveMessage");
+        newConnection.stop();
+      }
+
+      if (refreshSignalRInterval) {
+        clearInterval(refreshSignalRInterval);
+      }
+    };
+  }, [token]);
 
   return (
     <div>

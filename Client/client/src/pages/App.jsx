@@ -44,6 +44,15 @@ function App() {
       }
     };
 
+    const checkAndRefreshToken = () => {
+      const storedToken = localStorage.getItem("accessToken");
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    };
+
+    checkAndRefreshToken();
+
     const intervalId = setInterval(fetchNewToken, 30000);
 
     return () => {
@@ -73,7 +82,7 @@ function App() {
       <Routes>
         <Route path="*" element={<ErrorPage />} />
         <Route element={<ShareLayout auth={auth} setAuth={setAuth} />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home auth={auth} />} />
           <Route path="/auth/login" element={<Login setAuth={setAuth} />} />
           <Route path="/auth/register" element={<Register />} />
           <Route

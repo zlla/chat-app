@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
+
 import { axiosInstance, apiUrl } from "../support/axios_setting";
 
 const Chat = () => {
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [refreshSignalRInterval, setRefreshSignalRInterval] = useState(null);
   const [userName, setUserName] = useState("");
 
@@ -42,20 +43,21 @@ const Chat = () => {
     }
   };
 
-  const fetchUserInfo = async () => {
-    axiosInstance
-      .get(`${apiUrl}/api/GetUserInformation`)
-      .then((response) => {
-        setUserName(response.data.username);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${apiUrl}/api/GetUserInformation`
+        );
+        setUserName(response.data.username);
+      } catch (error) {
+        setUserName("none");
+        console.log(error);
+      }
+    };
+
     fetchUserInfo();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const initialToken = localStorage.getItem("accessToken");
@@ -81,7 +83,6 @@ const Chat = () => {
 
         const intervalId = setInterval(refreshSignalR, 30000);
         setRefreshSignalRInterval(intervalId);
-        fetchUserInfo();
       })
       .catch((error) => {
         console.log(error);

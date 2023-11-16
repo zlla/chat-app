@@ -2,12 +2,20 @@ import { bool, number, string } from "prop-types";
 import { useEffect, useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
-import { axiosInstance, apiUrl } from "../support/axios_setting";
-import "../styles/homepage/info-modal.css";
+import { axiosInstance, apiUrl } from "../../support/axios_setting";
+
+import "../../styles/homepage/general.css";
+import "../../styles/homepage/info-modal.css";
 
 const JobCard = (props) => {
-  const { auth, title, salary, postingDate } = props;
+  const { title, salary, postingDate } = props;
 
   return (
     <div>
@@ -20,14 +28,12 @@ const JobCard = (props) => {
           <b>Posting Date: </b>
           {postingDate}
         </p>
-        <br />
       </div>
     </div>
   );
 };
 
 JobCard.propTypes = {
-  auth: bool,
   title: string,
   salary: number,
   postingDate: string,
@@ -74,12 +80,14 @@ const Jobs = (props) => {
       setJobsPerPage(1);
     } else {
       const screenWidth = window.innerWidth;
-      if (screenWidth <= 780) {
-        setJobsPerPage(2);
-      } else if (screenWidth <= 1080) {
+      if (screenWidth <= 768) {
         setJobsPerPage(3);
-      } else {
+      } else if (screenWidth <= 1024) {
         setJobsPerPage(4);
+      } else if (screenWidth <= 1280) {
+        setJobsPerPage(5);
+      } else {
+        setJobsPerPage(6);
       }
     }
   }, [isSmallScreen]);
@@ -132,24 +140,24 @@ const Jobs = (props) => {
     jobs.length < jobsPerPage ? [] : jobs.slice(startIdx, endIdx);
 
   // Step 1: Create state to track whether the purchase form should be displayed
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   // Step 2: Handle course click event
   const handleJobClick = (course) => {
     setSelectedCourse(course);
     // Show the purchase form when a course is clicked
-    setShowPurchaseModal(true);
+    setShowInfoModal(true);
   };
 
   // Step 3: Define a function to close the purchase form modal
   const handleCloseModal = () => {
-    setShowPurchaseModal(false);
+    setShowInfoModal(false);
   };
 
   return (
     <div className="courses-container">
-      <div className="px-xxl-5 px-xl-5 px-lg-5 flex-">
+      <div className="px-xxl-5 px-xl-5 px-lg-5 flex- mb-3">
         {categories.map((category) => (
           <a
             onClick={(e) => showJobByCategory(e, category.category)}
@@ -165,8 +173,7 @@ const Jobs = (props) => {
           </a>
         ))}
       </div>
-      <br />
-      <Row className="d-flex justify-content-between px-xxl-5 px-xl-5 px-lg-5">
+      <Row className="courses-item  d-flex justify-content-start px-xxl-5 px-xl-5 px-lg-5 me-0">
         {currentJobs.map((job) => (
           <Col
             key={job.jobID}
@@ -188,32 +195,32 @@ const Jobs = (props) => {
         ))}
       </Row>
       {totalPage > 1 && (
-        <div className="courses-controls mt-3 px-xxl-5 px-xl-5 px-lg-5 me-2">
+        <div className="courses-controls pt-5 mt-5 px-xxl-5 px-xl-5 px-lg-5 me-2">
           <Button
             onClick={handlePrev}
             disabled={currentPage === 1}
             className="control-button"
           >
-            Prev
+            <FontAwesomeIcon icon={faChevronLeft} />
           </Button>{" "}
           <Button
             onClick={handleNext}
             disabled={currentPage === totalPage}
             className="control-button"
           >
-            Next
+            <FontAwesomeIcon icon={faChevronRight} />
           </Button>
         </div>
       )}
-      {showPurchaseModal && selectedCourse && (
-        <div className="purchase-modal">
+      {auth && showInfoModal && selectedCourse && (
+        <div className="info-modal">
           <div className="modal-content">
             <span className="close" onClick={handleCloseModal}>
               &times;
             </span>
             <form className="purchaseContainer">
               <fieldset>
-                <legend>Purchase - {selectedCourse.courseName}</legend>
+                <legend>Apply</legend>
                 <div className="form-group">
                   <label htmlFor="emailInput" className="form-label mt-4">
                     Email address
@@ -240,6 +247,21 @@ const Jobs = (props) => {
                 Ok
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {!auth && showInfoModal && selectedCourse && (
+        <div className="info-modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleCloseModal}>
+              &times;
+            </span>
+            <div>
+              <h1>404</h1>
+              <p>
+                Please <Link to={"/auth/login"}>Login</Link> to see more.
+              </p>
+            </div>
           </div>
         </div>
       )}

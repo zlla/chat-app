@@ -11,7 +11,6 @@ namespace ChatApp.Models.DTO
         public DateTime? EndDate { get; set; }
         public decimal? Price { get; set; }
         public string? CourseCategory { get; set; }
-        public int? SelectedByAdmin { get; set; }
         public string? LinkImage { get; set; }
     }
 }

@@ -3,12 +3,18 @@ import "bootswatch/dist/journal/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";
-import ErrorPage from "./error-page";
+
+import ErrorPage from "./ErrorPage";
 import Login from "./auth/login";
 import Register from "./auth/register";
 import Chat from "./Chat";
 import Home from "./Home";
-import ShareLayout from "./ShareLayout";
+import NavBarShareLayout from "./NavBarShareLayout";
+import CoursesPageShareLayout from "./CoursesPageShareLayout";
+import AllCourses from "../components/courses/AllCourses";
+import RegisteredCourses from "../components/courses/RegisteredCourses";
+import PlannedCourses from "../components/courses/PlannedCourses";
+import LearnedProfile from "../components/courses/LearnedProfile";
 
 function App() {
   const initialToken = localStorage.getItem("accessToken");
@@ -81,8 +87,23 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="*" element={<ErrorPage />} />
-        <Route element={<ShareLayout auth={auth} setAuth={setAuth} />}>
+        <Route element={<NavBarShareLayout auth={auth} setAuth={setAuth} />}>
           <Route path="/" element={<Home auth={auth} />} />
+          <Route element={<CoursesPageShareLayout auth={auth} />}>
+            <Route path="courses/" element={<AllCourses />} />
+            <Route
+              path="courses/showRegisteredCourses"
+              element={<RegisteredCourses />}
+            />
+            <Route
+              path="courses/showPlannedCourses"
+              element={<PlannedCourses />}
+            />
+            <Route
+              path="courses/showLearnedProfile"
+              element={<LearnedProfile />}
+            />
+          </Route>
           <Route path="/auth/login" element={<Login setAuth={setAuth} />} />
           <Route path="/auth/register" element={<Register />} />
           <Route

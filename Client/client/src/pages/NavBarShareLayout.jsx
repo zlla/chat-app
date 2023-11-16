@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 
-const ShareLayout = (props) => {
+const NavBarShareLayout = (props) => {
   const { auth, setAuth } = props;
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ const ShareLayout = (props) => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to={"/"}>
+                <NavLink className="nav-link" to={"/courses"}>
                   Courses
                 </NavLink>
               </li>
@@ -117,9 +117,9 @@ const ShareLayout = (props) => {
   );
 };
 
-ShareLayout.propTypes = {
+NavBarShareLayout.propTypes = {
   auth: PropTypes.bool,
   setAuth: PropTypes.func,
 };
 
-export default ShareLayout;
+export default NavBarShareLayout;

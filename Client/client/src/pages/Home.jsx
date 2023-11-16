@@ -1,6 +1,6 @@
 import { bool } from "prop-types";
-import Courses from "../components/Courses";
-import Jobs from "../components/Jobs";
+import Courses from "../components/home/Courses";
+import Jobs from "../components/home/Jobs";
 
 const Home = (props) => {
   const { auth } = props;
@@ -47,8 +47,8 @@ const Home = (props) => {
         </button>
       </div>
 
-      <div className="my-4 px-5">
-        <div>
+      <div>
+        <div className="mt-2 py-5">
           <div className="px-xxl-5 px-xl-5 px-lg-5">
             <h1>A broad selection of courses</h1>
             <p>
@@ -58,7 +58,7 @@ const Home = (props) => {
           </div>
           <Courses auth={auth} />
         </div>
-        <div className="mt-5">
+        <div className="mt-4 pt-3">
           <div className="px-xxl-5 px-xl-5 px-lg-5">
             <h1>A broad selection of jobs</h1>
             <p>

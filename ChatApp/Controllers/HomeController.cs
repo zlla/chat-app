@@ -41,10 +41,13 @@ namespace ChatApp.Controllers
                     {
                         CourseId = ec.CourseId,
                         CourseName = ec.CourseName,
-                        CourseCategory = ec.CourseCategory,
+                        Description = ec.Description,
                         Instructor = ec.Instructor,
-                        Price = ec.Price,
                         Duration = ec.Duration,
+                        StartDate = ec.StartDate,
+                        EndDate = ec.EndDate,
+                        Price = ec.Price,
+                        CourseCategory = ec.CourseCategory,
                         LinkImage = ec.LinkImage
                     };
                     courses.Add(temp);

@@ -1,0 +1,72 @@
+.course-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+  z-index: 2;
+}
+
+.course-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
+}
+
+.course-card img {
+  transition: transform 0.3s ease-in-out;
+}
+
+.course-card:hover img {
+  transform: scale(1.1);
+}
+
+.course-card h5 {
+  color: #333;
+}
+
+.course-card p {
+  color: #777;
+}
+
+.course-card b {
+  color: #555;
+}
+
+.courses-container {
+  position: relative;
+}
+
+.courses-controls {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.control-button {
+  font-size: 18px;
+  background-color: rgba(0, 123, 255, 0.5);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.courses-item {
+  margin-bottom: 30px;
+}
+
+.control-button:hover {
+  background-color: rgba(0, 123, 255, 0.8);
+}
+
+.control-button:first-child {
+  transform: translateX(-80%);
+}
+
+.control-button:last-child {
+  transform: translateX(0%);
+}

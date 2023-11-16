@@ -10,4 +10,14 @@ const axiosInstance = axios.create({
   },
 });
 
-export { axiosInstance, apiUrl };
+const getData = async (apiRoute) => {
+  try {
+    const response = await axiosInstance.get(`${apiUrl}/${apiRoute}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+export { axiosInstance, apiUrl, getData };

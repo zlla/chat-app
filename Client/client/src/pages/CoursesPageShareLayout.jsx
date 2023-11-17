@@ -11,19 +11,22 @@ const CoursesPageShareLayout = () => {
         <nav className="col-md-2 d-none d-md-block bg-light sidebar">
           <div className="position-sticky">
             <div className="d-flex flex-column">
-              <div className="p-3">
+              <div className="p-3 d-flex">
                 <img
                   src="https://placekitten.com/50/50"
                   alt="Profile"
                   className="rounded-circle"
                 />
-                <p className="mt-2">User Name</p>
+                <p className="ms-3 my-auto">User Name</p>
               </div>
 
               <NavLink
                 to={"courses/"}
                 className={`nav-link custom-link ${
-                  location.pathname === "/courses/" ? "active-link" : ""
+                  location.pathname === "/courses" ||
+                  location.pathname === "/courses/"
+                    ? "active-link"
+                    : ""
                 }`}
               >
                 All Courses

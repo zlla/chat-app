@@ -15,6 +15,8 @@ import AllCourses from "../components/courses/AllCourses";
 import RegisteredCourses from "../components/courses/RegisteredCourses";
 import PlannedCourses from "../components/courses/PlannedCourses";
 import LearnedProfile from "../components/courses/LearnedProfile";
+import CourseDetails from "./CourseDetails";
+import { axiosInstance, apiUrl } from "../support/axios_setting";
 
 function App() {
   const initialToken = localStorage.getItem("accessToken");
@@ -83,6 +85,21 @@ function App() {
     }
   }, [token, setAuth]);
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${apiUrl}/api/GetUserInformation`
+        );
+        localStorage.setItem("username", response.data.username);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [token]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -91,6 +108,7 @@ function App() {
           <Route path="/" element={<Home auth={auth} />} />
           <Route element={<CoursesPageShareLayout auth={auth} />}>
             <Route path="courses/" element={<AllCourses />} />
+            <Route path="courses/:courseId" element={<CourseDetails />} />
             <Route
               path="courses/showRegisteredCourses"
               element={<RegisteredCourses />}

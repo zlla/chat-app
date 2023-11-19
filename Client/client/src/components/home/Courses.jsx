@@ -133,7 +133,7 @@ const Courses = (props) => {
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [modalStyle, setModalStyle] = useState({
-    width: "50%",
+    width: "30%",
   });
   const changeStyle = (param) => {
     setModalStyle({
@@ -146,18 +146,15 @@ const Courses = (props) => {
     setSelectedCourse(course);
     // Show the purchase form when a course is clicked
     setShowInfoModal(true);
-    const modalEle = document.getElementsByClassName("modal-content");
-    console.log(modalEle);
-    // modalEle.style.setProperty("width: 50%;");
   };
   // Step 3: Define a function to close the purchase form modal
   const handleCloseModal = () => {
-    changeStyle(50);
+    changeStyle(30);
     setShowInfoModal(false);
     setShowPurchaseForm(false);
   };
   const handleBuyNowClick = () => {
-    changeStyle(80);
+    changeStyle(60);
     setShowPurchaseForm(true);
   };
 
@@ -173,7 +170,7 @@ const Courses = (props) => {
                 : ""
             } d-block d-sm-inline-block`}
             key={category.category}
-            style={{ textDecoration: "none" }}
+            style={{ textDecoration: "none", cursor: "pointer" }}
           >
             {category.category}
           </a>
@@ -230,8 +227,8 @@ const Courses = (props) => {
               &times;
             </span>
             <div className="d-flex justify-content-evenly">
-              <div className="container my-4">
-                <div className="mx-auto w-80">
+              <div className="container">
+                <div className="mx-auto">
                   <div className="px-3 border rounded p-4 shadow-sm">
                     <img
                       src={selectedCourse.linkImage}
@@ -268,14 +265,17 @@ const Courses = (props) => {
                         </p>
                       </div>
                     </div>
-                    <h2 className="mb-3">${selectedCourse.price}</h2>
-                    <button
-                      type="button"
-                      className="btn btn-info w-100"
-                      onClick={() => handleBuyNowClick()}
-                    >
-                      Buy Now
-                    </button>
+                    <div className="d-flex">
+                      {" "}
+                      <h2 className="my-auto me-2">${selectedCourse.price}</h2>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => handleBuyNowClick()}
+                      >
+                        Buy Now
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

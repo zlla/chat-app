@@ -167,7 +167,7 @@ const Jobs = (props) => {
                 : ""
             } d-block d-sm-inline-block`}
             key={category.category}
-            style={{ textDecoration: "none" }}
+            style={{ textDecoration: "none", cursor: "pointer" }}
           >
             {category.category}
           </a>

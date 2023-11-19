@@ -4,6 +4,7 @@ using ChatApp.Helpers;
 using ChatApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp
 {
@@ -22,7 +23,7 @@ namespace ChatApp
         }
 
         [HttpGet]
-        public IActionResult GetUser()
+        public async Task<IActionResult> GetUser()
         {
             string? accessToken = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
@@ -32,7 +33,7 @@ namespace ChatApp
                 string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
                 if (!string.IsNullOrEmpty(userName))
                 {
-                    User? user = _db.Users.FirstOrDefault(u => u.Username == userName);
+                    User? user = await _db.Users.FirstOrDefaultAsync(u => u.Username == userName);
                     if (user != null)
                     {
                         UserInformation userInformation = new()

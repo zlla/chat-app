@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-import { axiosInstance, apiUrl } from "../support/axios_setting";
-
 const Chat = () => {
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [refreshSignalRInterval, setRefreshSignalRInterval] = useState(null);
-  const [userName, setUserName] = useState("");
 
   //for send private message
   const [test, setTest] = useState("");
@@ -42,22 +39,6 @@ const Chat = () => {
       }
     }
   };
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `${apiUrl}/api/GetUserInformation`
-        );
-        setUserName(response.data.username);
-      } catch (error) {
-        setUserName("none");
-        console.log(error);
-      }
-    };
-
-    fetchUserInfo();
-  }, [token]);
 
   useEffect(() => {
     const initialToken = localStorage.getItem("accessToken");
@@ -104,7 +85,7 @@ const Chat = () => {
     <div>
       <h2>SignalR Chat</h2>
       <div>
-        <p>User Name: {userName}</p>
+        <p>User Name: {localStorage.getItem("username")}</p>
       </div>
       <div>
         {messages.map((msg, index) => (

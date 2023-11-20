@@ -12,9 +12,10 @@ import { Link } from "react-router-dom";
 
 import "../../styles/homepage/general.css";
 import "../../styles/homepage/info-modal.css";
-import { getData } from "../../support/axios_setting";
+import { apiUrl } from "../../support/axios_setting";
 import CourseCard from "./Course";
 import courseImageList from "../../data/images";
+import axios from "axios";
 
 const Courses = (props) => {
   const { auth } = props;
@@ -68,6 +69,24 @@ const Courses = (props) => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        const token = localStorage.getItem("accessToken");
+        const axiosInstance = axios.create({
+          baseURL: apiUrl,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const getData = async (apiRoute) => {
+          try {
+            const response = await axiosInstance.get(`${apiUrl}/${apiRoute}`);
+            return response.data;
+          } catch (error) {
+            console.error(error);
+            return [];
+          }
+        };
+
         const data = await getData("api/home/hot_trend_courses");
         if (
           data["categoryCount"] &&
@@ -159,8 +178,8 @@ const Courses = (props) => {
   };
 
   return (
-    <div className="courses-container">
-      <div className="px-xxl-5 px-xl-5 px-lg-5 flex- mb-3">
+    <div className="courses-container px-xxl-5 px-xl-5 px-lg-5">
+      <div className="mb-3">
         {categories.map((category) => (
           <a
             onClick={(e) => showCourseByCategory(e, category.category)}
@@ -176,7 +195,7 @@ const Courses = (props) => {
           </a>
         ))}
       </div>
-      <Row className="course-item d-flex justify-content-start px-xxl-5 px-xl-5 px-lg-5 me-0">
+      <Row className="course-item d-flex justify-content-start me-0">
         {currentCourses.map((course) => (
           <Col
             key={course.courseId}
@@ -203,7 +222,7 @@ const Courses = (props) => {
         ))}
       </Row>
       {totalPage > 1 && (
-        <div className="courses-controls pt-5 mt-5 px-xxl-5 px-xl-5 px-lg-5">
+        <div className="courses-controls pt-5 mt-5">
           <Button
             onClick={handlePrev}
             disabled={currentPage === 1}

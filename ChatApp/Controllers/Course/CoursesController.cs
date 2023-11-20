@@ -4,6 +4,7 @@ using ChatApp.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ChatApp.Controllers
 {
@@ -21,19 +22,20 @@ namespace ChatApp.Controllers
 
         [AllowAnonymous]
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllCourses(int page, int pageSize)
+        public async Task<IActionResult> GetAllCourses(int page = 1, int pageSize = 10, string sortField = "CourseId", string sortOrder = "ASC")
         {
             int startIndex = (page - 1) * pageSize;
 
-            List<EducationalCourseDTO>? courses = new();
-            List<EducationalCourse>? coursesFromDb = await _db.EducationalCourses
+            IQueryable<EducationalCourse> query = _db.EducationalCourses;
+
+            var sortExpression = $"{sortField} {sortOrder}";
+
+            query = ApplyOrder(query, sortExpression);
+
+            List<EducationalCourseDTO> courses = await query
                 .Skip(startIndex)
                 .Take(pageSize)
-                .ToListAsync();
-
-            foreach (EducationalCourse ec in coursesFromDb)
-            {
-                EducationalCourseDTO temp = new()
+                .Select(ec => new EducationalCourseDTO
                 {
                     CourseId = ec.CourseId,
                     CourseName = ec.CourseName,
@@ -45,11 +47,23 @@ namespace ChatApp.Controllers
                     Price = ec.Price,
                     CourseCategory = ec.CourseCategory,
                     LinkImage = ec.LinkImage
-                };
-                courses.Add(temp);
-            }
+                })
+                .ToListAsync();
 
             return Ok(courses);
+        }
+
+        private static IQueryable<EducationalCourse> ApplyOrder(IQueryable<EducationalCourse> source, string order)
+        {
+            var parts = order.Split(' ');
+            var property = parts[0];
+            var ascending = parts.Length > 1 && string.Equals(parts[1], "ASC", StringComparison.OrdinalIgnoreCase);
+
+            var parameter = Expression.Parameter(typeof(EducationalCourse), "x");
+            var propertyAccess = Expression.PropertyOrField(parameter, property);
+            var orderExpression = Expression.Lambda(propertyAccess, parameter);
+
+            return ascending ? Queryable.OrderBy(source, (dynamic)orderExpression) : Queryable.OrderByDescending(source, (dynamic)orderExpression);
         }
 
         [AllowAnonymous]

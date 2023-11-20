@@ -16,7 +16,7 @@ import RegisteredCourses from "../components/courses/RegisteredCourses";
 import PlannedCourses from "../components/courses/PlannedCourses";
 import LearnedProfile from "../components/courses/LearnedProfile";
 import CourseDetails from "./CourseDetails";
-import { axiosInstance, apiUrl } from "../support/axios_setting";
+import { apiUrl } from "../support/axios_setting";
 
 function App() {
   const initialToken = localStorage.getItem("accessToken");
@@ -88,6 +88,13 @@ function App() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
+        const token = localStorage.getItem("accessToken");
+        const axiosInstance = axios.create({
+          baseURL: apiUrl,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const response = await axiosInstance.get(
           `${apiUrl}/api/GetUserInformation`
         );
@@ -126,7 +133,9 @@ function App() {
           <Route path="/auth/register" element={<Register />} />
           <Route
             path="/chat"
-            element={auth ? <Chat /> : <Navigate to="/auth/login" />}
+            element={
+              auth ? <Chat token={token} /> : <Navigate to="/auth/login" />
+            }
           />
         </Route>
       </Routes>

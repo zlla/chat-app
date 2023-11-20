@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
+import { string } from "prop-types";
 
-const Chat = () => {
+const Chat = (props) => {
+  const { token } = props;
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const [token, setToken] = useState(localStorage.getItem("accessToken"));
-  const [refreshSignalRInterval, setRefreshSignalRInterval] = useState(null);
 
   //for send private message
   const [test, setTest] = useState("");
-
-  const refreshSignalR = () => {
-    const newAT = localStorage.getItem("accessToken");
-    setToken(newAT);
-  };
 
   const sendMessage = async () => {
     if (connection && message) {
@@ -41,9 +36,6 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    const initialToken = localStorage.getItem("accessToken");
-    setToken(initialToken);
-
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl("http://localhost:5255/chat", {
         accessTokenFactory: () => {
@@ -61,9 +53,6 @@ const Chat = () => {
         newConnection.on("ReceiveMessage", (message) => {
           setMessages((prevMessages) => [...prevMessages, message]);
         });
-
-        const intervalId = setInterval(refreshSignalR, 30000);
-        setRefreshSignalRInterval(intervalId);
       })
       .catch((error) => {
         console.log(error);
@@ -73,10 +62,6 @@ const Chat = () => {
       if (newConnection) {
         newConnection.off("ReceiveMessage");
         newConnection.stop();
-      }
-
-      if (refreshSignalRInterval) {
-        clearInterval(refreshSignalRInterval);
       }
     };
   }, [token]);
@@ -115,6 +100,10 @@ const Chat = () => {
       </div>
     </div>
   );
+};
+
+Chat.propTypes = {
+  token: string,
 };
 
 export default Chat;

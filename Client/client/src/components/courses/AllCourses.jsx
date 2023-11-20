@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,46 +13,86 @@ import CourseCard from "../home/Course";
 import "../../styles/homepage/general.css";
 import "../../styles/coursespage/AllCourses.css";
 import courseImageList from "../../data/images";
+import SortButton from "./SortButton";
 
 const AllCourses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [sortField, setSortField] = useState("CourseId");
+  const [sortOrder, setSortOrder] = useState("ASC");
+
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/Courses/all?page=${page}&pageSize=${pageSize}&sortField=${sortField}&sortOrder=${sortOrder}`
+      );
+      const data = response.data;
+      data.forEach((course) => {
+        course.linkImage =
+          courseImageList[Math.floor(Math.random() * courseImageList.length)];
+      });
+      setCourses(response.data);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/api/Courses/all?page=${page}&pageSize=${pageSize}`
-        );
-        const data = response.data;
-        data.forEach((course) => {
-          course.linkImage =
-            courseImageList[Math.floor(Math.random() * courseImageList.length)];
-        });
-        setCourses(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getData();
-  }, [page, pageSize]);
+    fetchCourses();
+  }, [page, pageSize, sortField, sortOrder]);
 
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [modalStyle, setModalStyle] = useState({
     width: "30%",
   });
+  const [isRegisteredCourse, setIsRegisteredCourse] = useState(false);
   const changeStyle = (param) => {
     setModalStyle({
       width: `${param}%`,
     });
   };
+  const checkRegisteredCourse = async (courseId) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const axiosInstance = axios.create({
+        baseURL: apiUrl,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const response = await axiosInstance.post(
+        `${apiUrl}/api/RegisterCourse/isRegistered`,
+        {
+          courseId,
+        }
+      );
+      console.log(response);
+      if (response.data == true) {
+        setIsRegisteredCourse(true);
+      } else {
+        setIsRegisteredCourse(false);
+      }
+    } catch (error) {
+      setIsRegisteredCourse(false);
+      console.log(error);
+    }
+  };
   const handleCourseClick = (e, course) => {
+    checkRegisteredCourse(course.courseId);
     setSelectedCourse(course);
     setShowInfoModal(true);
+  };
+  const handleSort = (field) => {
+    if (field === sortField) {
+      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC");
+    } else {
+      setSortField(field);
+      setSortOrder("ASC");
+    }
   };
   const handleCloseModal = () => {
     changeStyle(30);
@@ -72,8 +112,38 @@ const AllCourses = () => {
   };
 
   return (
-    <div>
-      <Row className="course-item d-flex justify-content-start px-xxl-5 px-xl-5 px-lg-5 me-0">
+    <div className="px-xxl-5 px-xl-5 px-lg-5 pt-2 mt-3">
+      <div className="sort-buttons">
+        <SortButton
+          field="CourseId"
+          label="Course ID"
+          sortOrder={sortOrder}
+          currentSortField={sortField}
+          onClick={() => handleSort("CourseId")}
+        />
+        <SortButton
+          field="CourseName"
+          label="Course Name"
+          sortOrder={sortOrder}
+          currentSortField={sortField}
+          onClick={() => handleSort("CourseName")}
+        />
+        <SortButton
+          field="StartDate"
+          label="Start Date"
+          sortOrder={sortOrder}
+          currentSortField={sortField}
+          onClick={() => handleSort("StartDate")}
+        />
+        <SortButton
+          field="Duration"
+          label="Duration"
+          sortOrder={sortOrder}
+          currentSortField={sortField}
+          onClick={() => handleSort("Duration")}
+        />
+      </div>
+      <Row className="course-item d-flex justify-content-start me-0 mb-5">
         {courses.map((course) => (
           <Col
             key={course.courseId}
@@ -99,7 +169,7 @@ const AllCourses = () => {
           </Col>
         ))}
       </Row>
-      <div className="pagination-buttons px-xxl-5 px-xl-5 px-lg-5 pt-2 mt-5">
+      <div className="pagination-buttons">
         <button
           className="pagination-button btn btn-primary"
           onClick={handlePrevPage}
@@ -163,13 +233,15 @@ const AllCourses = () => {
                     <div className="d-flex">
                       {" "}
                       <h2 className="my-auto me-2">${selectedCourse.price}</h2>
-                      <button
-                        type="button"
-                        className="btn btn-primary me-2"
-                        onClick={() => handleBuyNowClick()}
-                      >
-                        Buy Now
-                      </button>
+                      {!isRegisteredCourse && (
+                        <button
+                          type="button"
+                          className="btn btn-primary me-2"
+                          onClick={() => handleBuyNowClick()}
+                        >
+                          Buy Now
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="btn btn-info"

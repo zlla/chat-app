@@ -9,10 +9,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-import { axiosInstance, apiUrl } from "../../support/axios_setting";
+import { apiUrl } from "../../support/axios_setting";
 
 import "../../styles/homepage/general.css";
 import "../../styles/homepage/info-modal.css";
+import axios from "axios";
 
 const JobCard = (props) => {
   const { title, salary, postingDate } = props;
@@ -49,9 +50,17 @@ const Jobs = (props) => {
   const [initJobs, setInitJobs] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const getData = async (address) => {
+  const getData = async (apiRoute) => {
     try {
-      const response = await axiosInstance.get(`${apiUrl}/${address}`);
+      const token = localStorage.getItem("accessToken");
+      const axiosInstance = axios.create({
+        baseURL: apiUrl,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const response = await axiosInstance.get(`${apiUrl}/${apiRoute}`);
       return response.data;
     } catch (error) {
       console.error(error);

@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-import { apiUrl } from "../../support/axios_setting";
+import { apiUrl } from "../../support/apiUrl";
 
 import "../../styles/homepage/general.css";
 import "../../styles/homepage/info-modal.css";
@@ -165,8 +165,8 @@ const Jobs = (props) => {
   };
 
   return (
-    <div className="courses-container">
-      <div className="px-xxl-5 px-xl-5 px-lg-5 flex- mb-3">
+    <div className="courses-container px-xxl-5 px-xl-5 px-lg-5">
+      <div className="mb-3">
         {categories.map((category) => (
           <a
             onClick={(e) => showJobByCategory(e, category.category)}
@@ -182,7 +182,7 @@ const Jobs = (props) => {
           </a>
         ))}
       </div>
-      <Row className="courses-item  d-flex justify-content-start px-xxl-5 px-xl-5 px-lg-5 me-0">
+      <Row className="courses-item  d-flex justify-content-start">
         {currentJobs.map((job) => (
           <Col
             key={job.jobID}
@@ -204,7 +204,7 @@ const Jobs = (props) => {
         ))}
       </Row>
       {totalPage > 1 && (
-        <div className="courses-controls pt-5 mt-5 px-xxl-5 px-xl-5 px-lg-5 me-2">
+        <div className="courses-controls">
           <Button
             onClick={handlePrev}
             disabled={currentPage === 1}

@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
+  faCartShopping,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { apiUrl } from "../../support/axios_setting";
+import { apiUrl } from "../../support/apiUrl";
 import CourseCard from "../home/Course";
 import "../../styles/homepage/general.css";
 import "../../styles/coursespage/AllCourses.css";
@@ -45,15 +47,7 @@ const AllCourses = () => {
 
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [modalStyle, setModalStyle] = useState({
-    width: "30%",
-  });
   const [isRegisteredCourse, setIsRegisteredCourse] = useState(false);
-  const changeStyle = (param) => {
-    setModalStyle({
-      width: `${param}%`,
-    });
-  };
   const checkRegisteredCourse = async (courseId) => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -95,7 +89,6 @@ const AllCourses = () => {
     }
   };
   const handleCloseModal = () => {
-    changeStyle(30);
     setShowInfoModal(false);
   };
   const handleNextPage = () => {
@@ -104,9 +97,7 @@ const AllCourses = () => {
   const handlePrevPage = () => {
     setPage(Math.max(1, page - 1));
   };
-  const handleBuyNowClick = () => {
-    changeStyle(60);
-  };
+  const handleAddToPlannedClick = () => {};
   const handleDetailsClick = (courseId, linkImage) => {
     navigate(`/courses/${courseId}`, { state: { linkImage } });
   };
@@ -187,7 +178,7 @@ const AllCourses = () => {
       </div>
       {showInfoModal && selectedCourse && (
         <div className="info-modal">
-          <div className="modal-content" style={modalStyle}>
+          <div className="modal-content">
             <span className="close" onClick={handleCloseModal}>
               &times;
             </span>
@@ -237,9 +228,9 @@ const AllCourses = () => {
                         <button
                           type="button"
                           className="btn btn-primary me-2"
-                          onClick={() => handleBuyNowClick()}
+                          onClick={() => handleAddToPlannedClick()}
                         >
-                          Buy Now
+                          <FontAwesomeIcon icon={faCartShopping} />
                         </button>
                       )}
                       <button
@@ -252,7 +243,7 @@ const AllCourses = () => {
                           )
                         }
                       >
-                        Details
+                        <FontAwesomeIcon icon={faCircleInfo} />
                       </button>
                     </div>
                   </div>

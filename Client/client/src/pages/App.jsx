@@ -16,7 +16,7 @@ import RegisteredCourses from "../components/courses/RegisteredCourses";
 import PlannedCourses from "../components/courses/PlannedCourses";
 import LearnedProfile from "../components/courses/LearnedProfile";
 import CourseDetails from "./CourseDetails";
-import { apiUrl } from "../support/axios_setting";
+import { apiUrl } from "../support/apiUrl";
 
 function App() {
   const initialToken = localStorage.getItem("accessToken");

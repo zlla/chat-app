@@ -17,7 +17,9 @@ const CoursesPageShareLayout = () => {
                   alt="Profile"
                   className="rounded-circle"
                 />
-                <p className="ms-3 my-auto">User Name</p>
+                <p className="ms-3 my-auto">
+                  {localStorage.getItem("username")}
+                </p>
               </div>
 
               <NavLink

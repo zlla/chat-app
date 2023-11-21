@@ -1,28 +1,55 @@
 import { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import { apiUrl } from "../support/axios_setting";
+import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
+import { apiUrl } from "../support/apiUrl";
 import axios from "axios";
 import { IoMdPersonAdd } from "react-icons/io";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+
+import courseImageList from "../data/images";
 
 const CourseDetails = () => {
+  const navigate = useNavigate();
   const { state } = useLocation();
   const { linkImage } = state;
 
   const { courseId } = useParams();
   const [details, setDetails] = useState(null);
+  const [otherCourses, setOtherCourses] = useState();
+
+  const moveToOtherCourse = (e, courseId) => {
+    e.preventDefault();
+    window.scrollTo(0, 0);
+    navigate(`/courses/${courseId}`, {
+      state: {
+        linkImage: `${
+          courseImageList[Math.floor(Math.random() * courseImageList.length)]
+        }`,
+      },
+    });
+  };
 
   useEffect(() => {
-    const fetchCourseDetails = async () => {
+    const fetchData = async (setValue, address) => {
       try {
-        const response = await axios(`${apiUrl}/api/courses/all/${courseId}`);
+        const response = await axios(`${apiUrl}/${address}`);
         const data = await response.data;
-        setDetails(data);
+        setValue(data);
+
+        const otherCoursesResponse = await axios(
+          `${apiUrl}/api/courses/relatedCourse/?instructor=${data.educationalCourseDTO.instructor}`
+        );
+        console.log(otherCoursesResponse);
+        const otherCoursesData = await otherCoursesResponse.data;
+        setOtherCourses(otherCoursesData);
+        console.log(otherCoursesData);
       } catch (error) {
+        setValue([]);
         console.error("Error fetching course details:", error);
       }
     };
 
-    fetchCourseDetails();
+    fetchData(setDetails, `api/courses/all/${courseId}`);
   }, [courseId]);
 
   if (!details) {
@@ -69,6 +96,32 @@ const CourseDetails = () => {
                 </div>
               </li>
             ))}
+          </ul>
+          <h2 className="mt-4">
+            Other Courses by {details.educationalCourseDTO.instructor}:
+          </h2>
+          <ul className="list-group">
+            {otherCourses &&
+              otherCourses.map((course) => (
+                <li
+                  key={course.courseId}
+                  className="list-group-item d-flex justify-content-between"
+                >
+                  <div>
+                    <Link
+                      onClick={(e) => moveToOtherCourse(e, course.courseId)}
+                    >
+                      <p className="mb-1">{course.courseName}</p>
+                    </Link>
+                    <p>Description: {course.description}</p>
+                  </div>
+                  <div className="my-auto">
+                    <button className="btn btn-success">
+                      <FontAwesomeIcon icon={faCartShopping} />
+                    </button>
+                  </div>
+                </li>
+              ))}
           </ul>
         </div>
       </div>

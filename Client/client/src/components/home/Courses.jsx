@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 import "../../styles/homepage/general.css";
 import "../../styles/homepage/info-modal.css";
-import { apiUrl } from "../../support/axios_setting";
+import { apiUrl } from "../../support/apiUrl";
 import CourseCard from "./Course";
 import courseImageList from "../../data/images";
 import axios from "axios";
@@ -222,7 +222,7 @@ const Courses = (props) => {
         ))}
       </Row>
       {totalPage > 1 && (
-        <div className="courses-controls pt-5 mt-5">
+        <div className="courses-controls">
           <Button
             onClick={handlePrev}
             disabled={currentPage === 1}

@@ -119,6 +119,33 @@ namespace ChatApp.Controllers
 
             return NoContent();
         }
+
+        [AllowAnonymous]
+        [HttpGet("relatedCourse/")]
+        public async Task<IActionResult> GetCourseByInstructor(string instructor)
+        {
+            List<EducationalCourse>? educationalCourses = await _db.EducationalCourses.Where(ec => ec.Instructor.ToLower().Trim() == instructor.ToLower().Trim()).Take(5).ToListAsync();
+            if (educationalCourses.Count > 0)
+            {
+                List<EducationalCourseDTO> educationalCourseDTOs = new();
+                educationalCourses.ForEach((ec) =>
+                {
+                    educationalCourseDTOs.Add(new EducationalCourseDTO()
+                    {
+                        CourseId = ec.CourseId,
+                        CourseName = ec.CourseName,
+                        Description = ec.Description,
+                        Price = ec.Price,
+                        CourseCategory = ec.CourseCategory,
+                        LinkImage = ec.LinkImage
+                    });
+                });
+
+                return Ok(educationalCourseDTOs);
+            }
+
+            return NoContent();
+        }
     }
 
     public class PeopleInClass

@@ -19,6 +19,8 @@ namespace ChatApp.Models
         public virtual ICollection<UserCourseEnrollment>? UserCourseEnrollments { get; set; }
         public virtual ICollection<UserJobApplication>? UserJobApplications { get; set; }
         public virtual ICollection<UserSkill>? UserSkills { get; set; }
+        // public ICollection<UserConnection>? Connections1 { get; set; }
+        // public ICollection<UserConnection>? Connections2 { get; set; }
     }
 }
 

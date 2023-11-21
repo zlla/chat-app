@@ -21,14 +21,14 @@ namespace SignalRChat.Hubs
         {
             if (string.IsNullOrEmpty(token))
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", "Unauthorize");
+                await Clients.Caller.SendAsync("ReceiveMessage", "");
                 Context.Abort();
                 return;
             }
 
             if (_authLibrary.Validate(token, true) == null)
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", "Token Expired");
+                await Clients.Caller.SendAsync("ReceiveMessage", "");
                 Context.Abort();
                 return;
             }

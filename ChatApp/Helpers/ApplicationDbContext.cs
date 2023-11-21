@@ -23,7 +23,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserJobApplication> UserJobApplications { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<UserSkill> UserSkills { get; set; }
-
+    // public DbSet<UserConnection> UserConnections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +68,17 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Skill>().HasMany(s => s.UserSkills).WithOne(us => us.Skill).HasForeignKey(s => s.SkillID);
 
+        // modelBuilder.Entity<UserConnection>()
+        //     .HasOne(uc => uc.User1)
+        //     .WithMany(u => u.Connections1)
+        //     .HasForeignKey(uc => uc.UserID1)
+        //     .OnDelete(DeleteBehavior.Restrict);
+
+        // modelBuilder.Entity<UserConnection>()
+        //     .HasOne(uc => uc.User2)
+        //     .WithMany(u => u.Connections2)
+        //     .HasForeignKey(uc => uc.UserID2)
+        //     .OnDelete(DeleteBehavior.Restrict);
     }
 }
 

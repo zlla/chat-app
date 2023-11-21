@@ -8,6 +8,7 @@ const NavBarShareLayout = (props) => {
   const handleLogOut = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("username");
     setAuth(false);
     navigate("/");
   };

@@ -23,43 +23,35 @@ function App() {
   const [token, setToken] = useState(initialToken);
   const [auth, setAuth] = useState(!!initialToken);
 
+  const fetchNewToken = async () => {
+    const aT = localStorage.getItem("accessToken");
+    const rT = localStorage.getItem("refreshToken");
+
+    try {
+      const axiosInstance = axios.create({
+        baseURL: apiUrl,
+        headers: {
+          Authorization: `Bearer ${aT}`,
+          refreshToken: rT,
+        },
+      });
+
+      const response = await axiosInstance.post(
+        `${apiUrl}/api/auth/refresh-token`
+      );
+
+      let newAT = response.data.accessToken;
+      localStorage.setItem("accessToken", newAT);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      setToken(newAT);
+    } catch (error) {
+      setToken(null);
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const apiUrl = "http://localhost:5255";
-
-    const fetchNewToken = async () => {
-      const aT = localStorage.getItem("accessToken");
-      const rT = localStorage.getItem("refreshToken");
-
-      try {
-        const axiosInstance = axios.create({
-          baseURL: apiUrl,
-          headers: {
-            Authorization: `Bearer ${aT}`,
-            refreshToken: rT,
-          },
-        });
-
-        const response = await axiosInstance.post(
-          `${apiUrl}/api/auth/refresh-token`
-        );
-
-        let newAT = response.data.accessToken;
-        localStorage.setItem("accessToken", newAT);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        setToken(newAT);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const checkAndRefreshToken = () => {
-      const storedToken = localStorage.getItem("accessToken");
-      if (storedToken) {
-        setToken(storedToken);
-      }
-    };
-
-    checkAndRefreshToken();
+    fetchNewToken();
 
     const intervalId = setInterval(fetchNewToken, 30000);
 
@@ -76,14 +68,17 @@ function App() {
         });
         setAuth(true);
       } catch (error) {
+        console.log("Error during validation:", error);
         setAuth(false);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
       }
     }
 
     if (token) {
       requireAuth(token);
     }
-  }, [token, setAuth]);
+  }, [token, setAuth, setToken]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -100,6 +95,7 @@ function App() {
         );
         localStorage.setItem("username", response.data.username);
       } catch (error) {
+        localStorage.removeItem("username");
         console.log(error);
       }
     };

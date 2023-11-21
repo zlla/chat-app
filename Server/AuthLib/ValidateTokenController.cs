@@ -27,7 +27,7 @@ namespace Server.Controllers
 
             if (!string.IsNullOrEmpty(request.AccessToken))
             {
-                if (_authLibrary.Validate(request.AccessToken) != null)
+                if (_authLibrary.Validate(request.AccessToken, true) != null)
                 {
                     return Ok();
                 }

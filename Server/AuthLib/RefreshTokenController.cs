@@ -15,10 +15,10 @@ namespace Server.Controllers
         private readonly ApplicationDbContext _db;
         private readonly AuthLibrary _authLibrary;
 
-        public RefreshTokenController(ApplicationDbContext db, IConfiguration configuration)
+        public RefreshTokenController(ApplicationDbContext db, AuthLibrary authLibrary)
         {
             _db = db;
-            _authLibrary = new AuthLibrary(configuration);
+            _authLibrary = authLibrary;
         }
 
         [AllowAnonymous]
@@ -102,6 +102,9 @@ namespace Server.Controllers
             _db.RefreshTokens.Add(newRefreshTokenEntity);
             _db.SaveChanges();
 
+            _db.RefreshTokens.Remove(oldRefreshToken);
+            _db.SaveChanges();
+
             // Update the database with the new access token entity
             RefreshToken newRefreshTokenEntityFromDb = _db.RefreshTokens.Where(r => r.Value == newRefreshToken).First();
 
@@ -114,11 +117,6 @@ namespace Server.Controllers
             };
 
             _db.AccessTokens.Add(newAccessTokenEntity);
-            _db.SaveChanges();
-
-            // Revoke the old refresh token and delete it from the database
-            oldRefreshToken.Revoked = true;
-            _db.RefreshTokens.Remove(oldRefreshToken);
             _db.SaveChanges();
 
             ReturnToken returnToken = new()

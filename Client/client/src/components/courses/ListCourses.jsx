@@ -7,6 +7,7 @@ import { string } from "prop-types";
 
 import courseImageList from "../../data/images";
 import { apiUrl } from "../../support/apiUrl";
+import "../../styles/coursespage/TableListCourses.css";
 
 const ListCourses = (props) => {
   const { status } = props;
@@ -16,7 +17,7 @@ const ListCourses = (props) => {
   const [error, setError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8);
+  const [itemsPerPage] = useState(5);
 
   const handleViewDetails = (courseID) => {
     window.scrollTo(0, 0);
@@ -107,7 +108,7 @@ const ListCourses = (props) => {
       </table>
 
       {/* Pagination */}
-      <div className="mt-4">
+      <div className="mt-4 pagination-container">
         <ul className="pagination justify-content-center">
           {Array.from({
             length: Math.ceil(enrollments.length / itemsPerPage),

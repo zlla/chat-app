@@ -19,7 +19,6 @@ import axios from "axios";
 
 const Courses = (props) => {
   const { auth } = props;
-
   const isSmallScreen = useMediaQuery({ query: "(max-width: 560px)" });
   const [coursesPerPage, setCoursesPerPage] = useState(4);
   const [initCourses, setInitCourses] = useState([]);
@@ -43,10 +42,6 @@ const Courses = (props) => {
 
   const handlePaymentMethodChange = (e) => {
     setSelectedPaymentMethod(e.target.value);
-  };
-
-  const handleOkButtonClick = (e) => {
-    console.log(e);
   };
 
   useEffect(() => {
@@ -177,6 +172,148 @@ const Courses = (props) => {
     setShowPurchaseForm(true);
   };
 
+  const [formData, setFormData] = useState({
+    email: "",
+    creditCardNumber: "",
+    cvv: "",
+    expiredDate: "",
+  });
+
+  const [validationErrors, setValidationErrors] = useState({});
+  const [selectedCardType, setSelectedCardType] = useState();
+
+  const handleOkButtonClick = async (e) => {
+    e.preventDefault(); // Prevent the default form submission
+
+    try {
+      // Validate form data before making the request
+      if (validateForm()) {
+        // Your form submission logic goes here
+        console.log("Form is valid, submit the data:", formData);
+      } else {
+        console.log("Form is not valid, please check the errors.");
+      }
+      // Assuming you have selectedCourse available in your component
+      const registerCourseData = {
+        courseId: selectedCourse.courseId, // Assuming selectedCourse has an id property
+        email: formData.email || null,
+        paymentMethod: selectedPaymentMethod,
+        creditCardNumber: formData.creditCardNumber,
+        cvv: formData.cvv,
+        expiredDate: formData.expiredDate,
+      };
+
+      if (selectedPaymentMethod === "Qr") {
+        // Handle QR code case
+        // Assuming you have a function to process QR code data
+        handleQrCodeData(); // Implement this function
+      } else if (selectedPaymentMethod === "Credit Card") {
+        // Handle Credit Card case
+        // Make an Axios request to your server
+        // const response = await axios.post(
+        //   "/api/registerCourse",
+        //   registerCourseData
+        // );
+        console.log(registerCourseData);
+        // Handle the response as needed, e.g., show a success message
+      }
+
+      // Close the modal or perform other actions
+      // setShowPurchaseForm(false);
+    } catch (error) {
+      // Handle errors, e.g., show an error message
+      console.error("Error registering course:", error);
+    }
+  };
+
+  const handleQrCodeData = () => {
+    // Implement logic to handle QR code data
+    // For example, you can navigate to a different page or perform other actions
+    console.log("Handling QR code data");
+  };
+
+  const validateForm = () => {
+    let errors = {};
+
+    // Validate email (if required)
+    if (!formData.email.trim()) {
+      errors.email = "Email is required.";
+    }
+
+    // Validate credit card fields if payment method is 'Credit Card'
+    if (selectedPaymentMethod === "CreditCard") {
+      // Validate credit card number based on card type
+      if (!formData.creditCardNumber.trim()) {
+        errors.creditCardNumber = "Credit card number is required.";
+      } else if (
+        selectedCardType === "Visa" &&
+        !isValidVisaNumber(formData.creditCardNumber)
+      ) {
+        errors.creditCardNumber = "Invalid Visa card number.";
+      } else if (
+        selectedCardType === "MasterCard" &&
+        !isValidMasterCardNumber(formData.creditCardNumber)
+      ) {
+        errors.creditCardNumber = "Invalid MasterCard number.";
+      }
+
+      // Validate CVV
+      if (!formData.cvv.trim()) {
+        errors.cvv = "CVV is required.";
+      } else if (!isValidCVV(formData.cvv)) {
+        errors.cvv = "Invalid CVV.";
+      }
+
+      // Validate expiration date
+      if (!formData.expiredDate.trim()) {
+        errors.expiredDate = "Expiration date is required.";
+      } else if (!isValidExpirationDate(formData.expiredDate)) {
+        errors.expiredDate = "Invalid expiration date.";
+      }
+    }
+
+    setValidationErrors(errors);
+
+    // Check if there are no errors
+    return Object.keys(errors).length === 0;
+  };
+
+  const isValidVisaNumber = (creditCardNumber) => {
+    return /^4[0-9]{12}(?:[0-9]{3})?$/.test(creditCardNumber);
+  };
+
+  const isValidMasterCardNumber = (creditCardNumber) => {
+    return /^(?:5[1-5][0-9]{14}|2(?:2(?:2[1-9]|[3-9][0-9])|[3-6][0-9]{2}|7(?:[0-1][0-9]|20)))$/.test(
+      creditCardNumber
+    );
+  };
+
+  const isValidCVV = (cvv) => {
+    return /^[0-9]{3,4}$/.test(cvv);
+  };
+
+  const isValidExpirationDate = (inputExpirationDate) => {
+    const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
+
+    if (!dateRegex.test(inputExpirationDate)) {
+      return false; // Date format is invalid
+    }
+
+    const currentDate = new Date();
+    const expirationDateArray = inputExpirationDate.split("/");
+    const expirationDate = new Date(
+      parseInt(expirationDateArray[1]),
+      parseInt(expirationDateArray[0]) - 1,
+      1
+    );
+
+    if (expirationDate < currentDate) {
+      return false; // Card has expired
+    }
+
+    return true; // Date is valid
+  };
+
   return (
     <div className="courses-container px-xxl-5 px-xl-5 px-lg-5">
       <div className="mb-3">
@@ -300,7 +437,10 @@ const Courses = (props) => {
               </div>
 
               {showPurchaseForm && (
-                <form className="purchaseContainer mt-4 px-3">
+                <form
+                  className="purchaseContainer mt-4 px-3"
+                  onSubmit={handleOkButtonClick}
+                >
                   <fieldset>
                     <legend>
                       Purchase - <b>{selectedCourse.courseName}</b>
@@ -315,11 +455,22 @@ const Courses = (props) => {
                         id="emailInput"
                         aria-describedby="emailHelp"
                         placeholder="Enter email"
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        value={formData.email}
                       />
                       <small id="emailHelp" className="form-text text-muted">
                         You can leave it blank; we will use our service
                         registration email to send receive.
                       </small>
+                      <br />
+                      {validationErrors.email && (
+                        <small className="text-danger">
+                          {validationErrors.email}
+                        </small>
+                      )}
+                      <br />
                     </div>
 
                     <div className="form-group">
@@ -336,13 +487,55 @@ const Courses = (props) => {
                         value={selectedPaymentMethod}
                       >
                         <option value="">Select Payment Method</option>
-                        <option value="Credit Card">Credit Card</option>
+                        <option value="CreditCard">Credit Card</option>
                         <option value="Qr">Qr</option>
                       </select>
                     </div>
 
-                    {selectedPaymentMethod === "Credit Card" && (
+                    {selectedPaymentMethod === "CreditCard" && (
                       <div className="form-group">
+                        <div className="form-group mt-4">
+                          <label className="form-label">Card Type</label>
+
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="cardType"
+                              id="visaRadio"
+                              value="Visa"
+                              onClick={(e) => {
+                                setSelectedCardType(e.target.value);
+                              }}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="visaRadio"
+                            >
+                              Visa
+                            </label>
+                          </div>
+
+                          <div className="form-check form-check-inline">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="cardType"
+                              id="masterCardRadio"
+                              value="MasterCard"
+                              onClick={(e) => {
+                                setSelectedCardType(e.target.value);
+                              }}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="masterCardRadio"
+                            >
+                              MasterCard
+                            </label>
+                          </div>
+                        </div>
+
                         <label
                           htmlFor="creditCardNumber"
                           className="form-label mt-4"
@@ -354,19 +547,42 @@ const Courses = (props) => {
                           className="form-control"
                           id="creditCardNumber"
                           placeholder="Enter credit card number"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              creditCardNumber: e.target.value,
+                            })
+                          }
+                          value={formData.creditCardNumber}
                         />
+                        {validationErrors.creditCardNumber && (
+                          <small className="text-danger">
+                            {validationErrors.creditCardNumber}
+                          </small>
+                        )}
+                        <br />
                         <label
                           htmlFor="creditCardCVV"
                           className="form-label mt-4"
                         >
-                          CGV
+                          CVV
                         </label>
                         <input
                           type="number"
                           className="form-control"
                           id="creditCardCVV"
                           placeholder="Enter CVV number"
+                          onChange={(e) =>
+                            setFormData({ ...formData, cvv: e.target.value })
+                          }
+                          value={formData.cvv}
                         />
+                        {validationErrors.cvv && (
+                          <small className="text-danger">
+                            {validationErrors.cvv}
+                          </small>
+                        )}
+                        <br />
                         <label
                           htmlFor="creditCardExpiredDate"
                           className="form-label mt-4"
@@ -374,11 +590,24 @@ const Courses = (props) => {
                           Expired Date
                         </label>
                         <input
-                          type="month"
+                          type="string"
                           className="form-control"
                           id="creditCardExpiredDate"
-                          placeholder="Enter CVV number"
+                          placeholder="Enter expiration date"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              expiredDate: e.target.value,
+                            })
+                          }
+                          value={formData.expiredDate}
                         />
+                        {validationErrors.expiredDate && (
+                          <small className="text-danger">
+                            {validationErrors.expiredDate}
+                          </small>
+                        )}
+                        <br />
                       </div>
                     )}
 
@@ -394,13 +623,11 @@ const Courses = (props) => {
                     )}
                   </fieldset>
                   <br />
-                  <button
-                    type="button"
-                    className="btn btn-danger float-end"
-                    onClick={(e) => handleOkButtonClick(e)}
-                  >
-                    Ok
-                  </button>
+                  <div className="form-group">
+                    <button type="submit" className="btn btn-danger float-end">
+                      Ok
+                    </button>
+                  </div>
                 </form>
               )}
             </div>

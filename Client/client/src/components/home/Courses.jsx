@@ -9,13 +9,13 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 import "../../styles/homepage/general.css";
 import "../../styles/homepage/info-modal.css";
 import { apiUrl } from "../../support/apiUrl";
 import CourseCard from "./Course";
 import courseImageList from "../../data/images";
-import axios from "axios";
 
 const Courses = (props) => {
   const { auth } = props;
@@ -194,32 +194,39 @@ const Courses = (props) => {
         console.log("Form is not valid, please check the errors.");
       }
       // Assuming you have selectedCourse available in your component
-      const registerCourseData = {
-        courseId: selectedCourse.courseId, // Assuming selectedCourse has an id property
+      const [month, year] = formData.expiredDate.split("/");
+      const registerCourseRequest = {
+        courseId: selectedCourse.courseId,
         email: formData.email || null,
-        paymentMethod: selectedPaymentMethod,
+        paymentMethod: selectedCardType,
         creditCardNumber: formData.creditCardNumber,
         cvv: formData.cvv,
-        expiredDate: formData.expiredDate,
+        expiredDate: `${year}-${month}-01`,
       };
 
       if (selectedPaymentMethod === "Qr") {
         // Handle QR code case
         // Assuming you have a function to process QR code data
         handleQrCodeData(); // Implement this function
-      } else if (selectedPaymentMethod === "Credit Card") {
-        // Handle Credit Card case
-        // Make an Axios request to your server
-        // const response = await axios.post(
-        //   "/api/registerCourse",
-        //   registerCourseData
-        // );
-        console.log(registerCourseData);
-        // Handle the response as needed, e.g., show a success message
+      } else if (selectedPaymentMethod === "CreditCard") {
+        const aT = localStorage.getItem("accessToken");
+        const axiosInstance = axios.create({
+          baseURL: apiUrl,
+          headers: {
+            Authorization: `Bearer ${aT}`,
+          },
+        });
+        const response = await axiosInstance.post(
+          `${apiUrl}/api/RegisterCourse/RegisterCourse`,
+          registerCourseRequest
+        );
+        if (response) {
+          alert("success");
+        }
       }
 
       // Close the modal or perform other actions
-      // setShowPurchaseForm(false);
+      setShowPurchaseForm(false);
     } catch (error) {
       // Handle errors, e.g., show an error message
       console.error("Error registering course:", error);

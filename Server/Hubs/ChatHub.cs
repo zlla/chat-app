@@ -3,9 +3,11 @@ using Server.Helpers;
 using Server.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SignalRChat.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly ApplicationDbContext _db;
@@ -36,24 +38,24 @@ namespace SignalRChat.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            string? token = Context.GetHttpContext()?.Request.Query["access_token"];
-            SignalRConnectionId srci;
+            // string? token = Context.GetHttpContext()?.Request.Query["access_token"];
+            // SignalRConnectionId srci;
 
-            HandleAccessToken(token);
+            // HandleAccessToken(token);
 
-            if (!string.IsNullOrEmpty(token))
-            {
-                var principal = _authLibrary.Validate(token);
-                string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
-                User user = _db.Users.Where(u => u.Username == userName).First();
-                srci = new SignalRConnectionId
-                {
-                    UserId = user.Id,
-                    Value = Context.ConnectionId
-                };
-                _db.Update(srci);
-                _db.SaveChanges();
-            }
+            // if (!string.IsNullOrEmpty(token))
+            // {
+            //     var principal = _authLibrary.Validate(token);
+            //     string? userName = principal?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+            //     User user = _db.Users.Where(u => u.Username == userName).First();
+            //     srci = new SignalRConnectionId
+            //     {
+            //         UserId = user.Id,
+            //         Value = Context.ConnectionId
+            //     };
+            //     _db.Update(srci);
+            //     _db.SaveChanges();
+            // }
 
             await Clients.All.SendAsync("ReceiveMessage", "");
         }
@@ -117,5 +119,6 @@ namespace SignalRChat.Hubs
 
             await Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
         }
+
     }
 }

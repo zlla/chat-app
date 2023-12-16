@@ -14,10 +14,10 @@ namespace Server.Controllers
         private readonly ApplicationDbContext _db;
         private readonly AuthLibrary _generateToken;
 
-        public RegisterController(ApplicationDbContext db, IConfiguration configuration)
+        public RegisterController(ApplicationDbContext db, AuthLibrary authLibrary)
         {
             _db = db;
-            _generateToken = new(configuration);
+            _generateToken = authLibrary;
         }
 
         [HttpPost]

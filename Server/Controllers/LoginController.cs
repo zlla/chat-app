@@ -15,10 +15,10 @@ namespace Server.Controllers
         private readonly ApplicationDbContext _db;
         private readonly AuthLibrary _authLibrary;
 
-        public LoginController(ApplicationDbContext db, IConfiguration configuration)
+        public LoginController(ApplicationDbContext db, AuthLibrary authLibrary)
         {
             _db = db;
-            _authLibrary = new AuthLibrary(configuration);
+            _authLibrary = authLibrary;
         }
 
         [HttpPost]
